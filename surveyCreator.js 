@@ -1,0 +1,447 @@
+var QuestionObject = function() {};
+
+			QuestionObject.prototype.initialize = function(type, uniqueId)
+			{
+			    this.type = type;
+			    this.uniqueId = uniqueId;
+			    this.questionLiId = "questionLi" + uniqueId;
+			    //building blocks for question module: 1) a label for the question and 2) a div for the actual form
+			    this.questionDiv = null;
+			    this.questionLabel = null;
+
+			}
+
+			QuestionObject.prototype.createQuestionDivs = function()
+			{	//create Div that is going to hold the question form in the survey
+			    var node = document.createElement("LI");
+			   	this.questionDiv = document.createElement("div");
+			   	this.questionDiv.style.display = "block"; 
+			   	this.questionDiv.setAttribute('id', this.uniqueId);
+			   	this.questionLabel = document.createElement('label')
+			   	this.questionLabel.setAttribute('for', this.uniqueId);
+			   	this.questionLabel.setAttribute('id', 'questionLabel'+ this.uniqueId);
+			   	this.questionLabel.innerHTML = "No Question added yet. Please formulate question (and answering options) above";
+			    var form= document.createElement('form');
+			    form.appendChild(this.questionLabel);
+			    form.appendChild(this.questionDiv);
+   				node.appendChild(form);
+			    node.setAttribute('id', this.type);
+			    document.getElementById("questionsList").appendChild(node);
+
+			    //create input field in editor to get question from user
+			    var questionLI = document.createElement("LI");
+			    questionLI.setAttribute('id', this.questionLiId);
+			    var getQuestionForm = document.createElement("form");
+			    var questionInputfield = document.createElement('input');
+			    questionInputfield.setAttribute('type', "text");
+			    questionInputfield.setAttribute('size', '60');
+			    questionInputfield.setAttribute('placeholder', "Please type in the question");
+			    var addQuestionButton = document.createElement('button');
+			    addQuestionButton.innerHTML = "Add Question";
+			    //get the label
+			    var labelCurrent = document.getElementById('questionLabel'+ this.uniqueId);
+			    //button to add or change a question
+			    addQuestionButton.onclick = function(){
+			    	if (labelCurrent.innerHTML == "No Question added yet. Please formulate question (and answering options) above"){
+			    		alert('question added');
+			    		labelCurrent.innerHTML = questionInputfield.value + " "; 
+			    		addQuestionButton.innerHTML = "Change Question";
+			    	}
+			    	else {
+			    		alert('question changed');
+			    		labelCurrent.innerHTML = questionInputfield.value + " "; 
+			    	}
+					return false;
+  				};
+   				getQuestionForm.appendChild(questionInputfield);
+   				getQuestionForm.appendChild(addQuestionButton);
+   				questionLI.appendChild(getQuestionForm);
+			    document.getElementById("addQuestionsDiv").appendChild(questionLI);
+			    //reset dropdown for question types
+			    document.getElementById("questionDropDown").selectedIndex = " ";
+			    //show submit button 
+				document.getElementById('submitFormButton').style.visibility = "visible"
+
+			}
+
+			var QuestionWithOptions = function() {
+				this.addOptionButton = null;
+			};
+			QuestionWithOptions.prototype = new QuestionObject();
+			QuestionWithOptions.prototype.createOptionInputForm = function()
+			{	
+			    var questionForm = document.createElement("form");
+			    var inputfield = document.createElement('input');
+   				this.addOptionButton= document.createElement('button');
+			    this.addOptionButton.innerHTML = "Add Option";
+			    inputfield.setAttribute('type', "text");
+			    inputfield.setAttribute('size', '60');
+			    inputfield.setAttribute('id', "optionInput" + this.uniqueId);
+			    this.addOptionButton.id = "optionInput" + this.uniqueId;
+			    inputfield.setAttribute('placeholder', "Please type in an answer/option for the form");
+   				questionForm.appendChild(inputfield);
+   				questionForm.appendChild(this.addOptionButton);
+
+				//add the input form for getting the options to existing list of questions
+			    document.getElementById(this.questionLiId).appendChild(questionForm);
+			    //show submit button 
+				document.getElementById('submitFormButton').style.visibility = "visible"
+
+			}
+
+			var DropDownQuestion = function() {};
+			DropDownQuestion.prototype = new QuestionWithOptions();
+			DropDownQuestion.prototype.create = function()
+			{	
+				//use the methods of superclass to create required divs
+				this.createQuestionDivs();
+			    this.createOptionInputForm();
+   				var select = document.createElement('select');
+   				//add default option
+   				var opDef = new Option();
+				opDef.value = 'default';
+				opDef.text = "Please make a selection";
+				select.options.add(opDef);  
+   				this.addOptionButton.onclick = function(){
+				alert('option added');
+				var op = new Option();
+				var buttonId = this.id;
+				op.text = document.getElementById(buttonId).value;
+				op.value = op.text;
+				select.options.add(op);  
+				return false;
+  				};
+  				//add the dropdownlist to the list of question forms 
+				document.getElementById(this.uniqueId).appendChild(select);
+			}
+
+			var RadioQuestion = function() {};
+			RadioQuestion.prototype = new QuestionWithOptions();
+			RadioQuestion.prototype.create = function()
+			{	
+				this.createQuestionDivs();
+			    this.createOptionInputForm();
+   				var radioForm = document.createElement("form");
+   				this.addOptionButton.onclick = function(){
+				alert('option added');
+				var radioOption = document.createElement('input');
+				radioOption.type = 'radio';
+				var buttonId = this.id;
+				radioOption.value = document.getElementById(buttonId).value;
+				radioOption.name= "radioOption";
+				var radioOptionLabel = document.createElement('label');
+				radioOptionLabel.setAttribute('for', "radioOption")
+				radioOptionLabel.innerHTML = document.getElementById(buttonId).value + '<br>';
+				radioForm.appendChild(radioOption);
+				radioForm.appendChild(radioOptionLabel);
+				return false;
+  				};
+				//add the radio form to the list of question forms 
+				document.getElementById(this.uniqueId).appendChild(radioForm);
+			}
+
+			var MultipleChoiceQuestion = function() {};
+			MultipleChoiceQuestion.prototype = new QuestionWithOptions();
+			MultipleChoiceQuestion.prototype.create = function()
+			{	
+				this.createQuestionDivs();
+			    this.createOptionInputForm();
+   				var checkboxForm = document.createElement("form");
+   				this.addOptionButton.onclick = function(){
+				alert('option added');
+				var checkboxOption = document.createElement('input');
+				checkboxOption.type = 'checkbox';
+				var buttonId = this.id;
+				checkboxOption.value = document.getElementById(buttonId).value;
+				checkboxOption.name= "checkboxOption";
+				var checkboxOptionLabel = document.createElement('label');
+				checkboxOptionLabel.setAttribute('for', "checkboxOption")
+				checkboxOptionLabel.innerHTML = document.getElementById(buttonId).value + '<br>';
+				checkboxForm.appendChild(checkboxOption);
+				checkboxForm.appendChild(checkboxOptionLabel);
+				return false;
+  				};
+				//add the radio form to the list of question forms 
+				document.getElementById(this.uniqueId).appendChild(checkboxForm);
+
+			}
+
+			var OpenEndedQuestion = function() {};
+			OpenEndedQuestion.prototype = new QuestionObject();
+			OpenEndedQuestion.prototype.create = function()
+			{	
+			    this.createQuestionDivs();
+			    var questionForm = document.createElement("form");
+			    var inputArea = document.createElement('textarea');
+			    inputArea.setAttribute('cols', "100");
+			    inputArea.setAttribute('rows', '5');
+			    inputArea.setAttribute('id', "inputAreaInput");
+			    inputArea.setAttribute('placeholder', "Please type in the Answer here");
+   				questionForm.appendChild(inputArea);
+  				//add the inputarea to the list of question forms 
+				document.getElementById(this.uniqueId).appendChild(questionForm);
+			}
+
+			
+
+
+            function sayQuestionAdded() {
+               alert("Question added")
+            }
+
+            function createQuestion(e){
+			    if(e.value=="DropDown"){
+			    	var iD = new Date().getTime().toString();
+			        var myDropDownQuestion = new DropDownQuestion();
+			        myDropDownQuestion.initialize(e.value, iD);
+			        myDropDownQuestion.create();
+			       
+			    }
+			    else if(e.value=="MultipleChoice"){
+			        var iD = new Date().getTime().toString();
+			        var myMultipleChoiceQuestion = new MultipleChoiceQuestion();
+			        myMultipleChoiceQuestion.initialize(e.value, iD);
+			        myMultipleChoiceQuestion.create();
+
+			    }
+			    else if(e.value == "Radio"){
+			    	var iD = new Date().getTime().toString();
+			        var myRadioQuestion = new RadioQuestion();
+			        myRadioQuestion.initialize(e.value, iD);
+			        myRadioQuestion.create();
+			    }   
+		       	else if(e.value == "TextField"){
+		       		var iD = new Date().getTime().toString();
+			        var myOpenEndedQuestion = new OpenEndedQuestion();
+			        myOpenEndedQuestion.initialize(e.value, iD);
+			        myOpenEndedQuestion.create();
+
+				}
+			}	
+
+			// Validator object
+			function Validator(){}
+
+			Validator.prototype.initialize = function(form)
+			{	debugger;
+				this.qForm = form;
+			    this.valid=true;
+			    this.errorSpan = null;
+			    this.answersArray = [];
+			}
+			
+			Validator.prototype.showErrors = function(obj)
+			{
+			    //to be done 
+			}    
+
+			Validator.prototype.hideError = function(obj)
+			{
+			    //to be done
+			} 
+
+			//validator for entire site
+			var SiteValidator = function() {};
+			SiteValidator.prototype = new Validator();
+			SiteValidator.prototype.validate = function()
+			{	debugger;
+				var qList = this.qForm;
+				var q_elements = qList.getElementsByTagName("li");
+					for (var i = 0, len = q_elements.length; i < len; i++ ) {
+						var formElem = (q_elements[ i ]).getElementsByTagName('form')[0];
+					     if (((q_elements[ i ]).id) == "DropDown") {
+					     	var myDropDownValidator = new DropDownValidator();
+					     	myDropDownValidator.initialize(formElem);
+					     	myDropDownValidator.validate();
+					     	var checkResult = myDropDownValidator.valid;
+					     	if(checkResult == false) {
+					     		this.valid = false;
+					     		console.log("survey form is : " + this.valid);
+					     	}
+					     	else {
+					     		//concat answer of this question to SiteValidator answersArray
+					     		this.answersArray = this.answersArray.concat(myDropDownValidator.answersArray);
+					     		
+					     	}
+					     }
+					     else if (((q_elements[ i ]).id) == "TextField"){
+					     	var myOpenEndedValidator = new OpenEndedValidator();
+					     	myOpenEndedValidator.initialize(formElem);
+					     	myOpenEndedValidator.validate();
+					     	var checkResult = myOpenEndedValidator.valid;
+					     	if(checkResult == false) {
+					     		this.valid = false;
+					     		console.log("survey form is : " + this.valid);
+					     	}
+					     	else {
+					     		//concat answer of this question to SiteValidator answersArray
+					     		this.answersArray = this.answersArray.concat(myOpenEndedValidator.answersArray);
+					     	}
+					     }
+					     else if (((q_elements[ i ]).id) == "MultipleChoice"){
+					     	var myMultipleChoiceValidator = new MultipleChoiceValidator();
+					     	myMultipleChoiceValidator.initialize(formElem);
+					     	myMultipleChoiceValidator.validate();
+					     	var checkResult = myMultipleChoiceValidator.valid;
+					     	if(checkResult == false) {
+					     		this.valid = false;
+					     		console.log("survey form is : " + this.valid);
+					     	}
+					     	else {
+					     		//add !! entire array of answer ofs this question to SiteValidator answersArray 
+					     		this.answersArray[i] = myMultipleChoiceValidator.answersArray;
+					     	}
+					     }
+					     else if (((q_elements[ i ]).id) == "Radio"){
+					     	var myRadioValidator = new RadioValidator();
+					     	myRadioValidator.initialize(formElem);
+					     	myRadioValidator.validate();
+					     	var checkResult = myRadioValidator.valid;
+					     	if(checkResult == false) {
+					     		this.valid = false;
+					     		console.log("survey form is : " + this.valid);
+					     	}
+					     	else {
+					     		//concat answer of this question to SiteValidator answersArray
+					     		this.answersArray = this.answersArray.concat(myRadioValidator.answersArray);
+					     	}
+					     }
+					}
+					console.log(this.answersArray);
+					if (this.valid == true) { 
+						//this.showResults();
+						alert('survey was complete!!!!!!!!!');
+						//hide question form div and show answer instead
+						for (var i = 0, len = q_elements.length; i < len; i++ ) {
+						var divElem = (q_elements[ i ]).getElementsByTagName('div')[0];
+						var formElem = (q_elements[ i ]).getElementsByTagName('form')[0];
+						var liId = (q_elements[ i ]).id;
+						var answerSpan = document.createElement("span");
+			   			answerSpan.innerHTML= '<br>' + this.answersArray[i];
+					    formElem.appendChild(answerSpan);
+					    divElem.style.display = "none"; 
+					    //hide Submit Button
+						document.getElementById('submitFormButton').style.visibility = "hidden"
+					    }
+					    //set all buttons on page inactive
+					    var buttons = document.getElementsByTagName("button");
+						for (var i = 0; i < buttons.length; i++) {
+						    if (buttons[i].type === 'submit') {
+						        buttons[i].disabled = true;
+						    }
+						}
+						//set questiondropdown inactive
+						var dd = document.getElementById("questionDropDown");
+						dd.disabled = true;
+					}	
+
+			}
+
+			//validator for Dropdowns
+			var DropDownValidator = function() {};
+			DropDownValidator.prototype = new Validator();
+			DropDownValidator.prototype.validate = function()
+			{	
+				var qForm = this.qForm;
+				var ddl = (qForm).getElementsByTagName('select')[0];
+				var ddlLabel = (qForm).getElementsByTagName('label')[0];
+				if (ddl.selectedIndex ==  0 || ddlLabel.innerHTML == "No Question added yet. Please formulate question (and answering options) above"){
+					alert("nothing selected in dropdown list or no question formulated yet");
+					this.valid = false;
+				}
+				else {
+					//save answer in answersArray
+					var answerSelected = ddl.options[ddl.selectedIndex].value;
+					this.answersArray.push(answerSelected);
+					console.log(this.answersArray);
+
+				}
+			}
+
+			//validator for TextAreas
+			var OpenEndedValidator = function() {};
+			OpenEndedValidator.prototype = new Validator();
+			OpenEndedValidator.prototype.validate = function()
+			{	debugger;
+				var qForm = this.qForm;
+				var textArea = (qForm).getElementsByTagName('textarea')[0];
+				var textAreaLabel = (qForm).getElementsByTagName('label')[0];
+				if (textArea.value == '' || textAreaLabel.innerHTML == "No Question added yet. Please formulate question (and answering options) above"){
+				alert("nothing written in textarea or no question formulated yet");
+				this.valid = false;
+				}
+				else {
+					//save answer in answersArray
+					var answerSelected = textArea.value;
+					this.answersArray.push(answerSelected);
+					console.log(this.answersArray);
+
+				}	
+			}
+
+			//validator for Radio Buttons
+			var RadioValidator = function() {};
+			RadioValidator.prototype = new Validator();
+			RadioValidator.prototype.validate = function()
+			{	debugger;
+				var qForm = this.qForm;
+				var oneChecked = false;
+				var answerSelected = "";
+				var chx = qForm.getElementsByTagName('input');
+				var radioLabel = (qForm).getElementsByTagName('label')[0];
+			  	for (var i=0; i<chx.length; i++) {
+				    if (chx[i].type == 'radio' && chx[i].checked) {
+				      oneChecked = true;
+				      answerSelected = chx[i].value;
+				      //save answer in answersArray
+					  this.answersArray.push(answerSelected);
+					  console.log(this.answersArray);
+
+				    } 
+			  	}
+			   if (oneChecked == false || radioLabel.innerHTML == "No Question added yet. Please formulate question (and answering options) above"){
+				alert("no radio button selected or no question formulated yet");
+				this.valid = false;
+				}
+			}
+
+			//validator for MultipleChoice
+			var MultipleChoiceValidator = function() {};
+			MultipleChoiceValidator.prototype = new Validator();
+			MultipleChoiceValidator.prototype.validate = function()
+			{	debugger;
+				var qForm = this.qForm;
+				var oneChecked = false;
+				var answerSelected = "";
+				var chx = qForm.getElementsByTagName('input');
+				var checkboxLabel = (qForm).getElementsByTagName('label')[0];
+			  	for (var i=0; i<chx.length; i++) {
+				    if (chx[i].type == 'checkbox' && chx[i].checked) {
+				      oneChecked = true;
+				      answerSelected = chx[i].value;
+					  //save answers in answersArray
+					  this.answersArray.push(answerSelected);
+					  console.log(this.answersArray);
+				    } 
+			  	}
+			   if (oneChecked == false || checkboxLabel.innerHTML == "No Question added yet. Please formulate question (and answering options) above"){
+				alert("no checkbox was checked or no question formulated yet");
+				this.valid = false;
+				}
+			}
+
+
+			//validate form when Submit button clicked
+			function validateForm(obj) {
+				debugger;
+				 // instantiate validator object
+    			var myValidator = new SiteValidator();
+    			var qList =  document.getElementById('questionsList');
+    			myValidator.initialize(qList);
+    			myValidator.validate();
+    			return myValidator.valid;
+			}
+			//function for submitting survey
+			function submitSurvey() { 
+				var submitResult = validateForm();
+			}
