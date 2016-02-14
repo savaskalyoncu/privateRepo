@@ -7,63 +7,130 @@
 <script type="text/javascript" src="surveyCreator.js%20"></script>
 
 </head>
-<h1>Create A Survey</h1>
 
-<form> 
 
-</form> 
-<form action="#">
-<table>
-	<tr>
-		<tr>
-			<td>
-				Add Questions To Survey  
-			<select id="questionDropDown" name = "questionDropdown" onchange="createQuestion(this);">
-				<option value = " ">Select a Question type</option>
-				<option value="DropDown">Dropdown</option>
-				<option value="MultipleChoice" >Multiple Choice</option>
-				<option value="Radio">Radio Buttons</option>
-				<option value="TextField">Open Ended</option>
+  <style>
+
+    body {
+	  background: url("mochaGrunge.png");
+      background-position: center;
+      color: black;
+      font-family: helvetica;
+    }
+    p {
+      font-size: 15px;
+      text-align: center;
+    }
+    h1 {
+    	text-align: center;
+    }
+    input {
+      border: 0;
+      padding: 5px;
+      font-size: 15px;
+      border-radius: 3px;
+      margin: 3px;
+    }
+    #submitFormButton {
+    	background: green;
+    	color: white;
+    	border: 0;
+      padding: 5px;
+      font-size: 15px;
+      border-radius: 3px;
+      margin: 3px;
+      width: 100px;
+    }
+    button {
+      border: 0;
+      padding: 5px;
+      font-size: 15px;
+      border-radius: 3px;
+      margin: 3px;
+      width: 140px;
+      background-color: #0977FD;
+      color: white;
+    }
+    select {
+      border: 0;
+      padding: 5px;
+      font-size: 15px;
+      border-radius: 3px;
+      margin: 3px;
+    }
+    img	{
+    	color:white;
+    }
+    .content {
+    	margin: 0 auto;
+    	width: 700px;
+    }
+    table {
+
+    	border: 2px;
+    }
+  </style>
+
+			<p>
+				<img src="ch2xxs.png">
+			</p>
+			<p>
+				<h1>Survey Creator</h1>
+			</p>
+				<p>
+				<td>Add Questions To Survey
+				<select id="questionDropDown" name = "questionDropdown" onchange="createQuestion(this);">
+					<option value = " ">Select a Question type</option>
+					<option value="DropDown">Dropdown</option>
+					<option value="MultipleChoice" >Multiple Choice</option>
+					<option value="Radio">Radio Buttons</option>
+					<option value="TextField">Open Ended</option>
 				</select>
-			</td>
-		</tr>
-	</tr>
-	<tr>
-		<td>
-			<label for="addQuestionsDiv">Edit Questions (and Answer Options) here:</label>
-		</td>	
-	</tr>
-	<tr>
-		<td> 
-			<ol id="addQuestionsDiv">
-			</ol>
-		</td>
-	</tr>
+				</td>
+				</p>
 
-</table>
-</form>
-<form id= 'surveyForm'>
-<table>
-	<tr>
-		<tr>
+<div class="content">
+
+
+			
+<form  action="#">
+
+		<table>
+
+			<tr>
+				 <td>	
+				 	<label for="addQuestionsDiv">Edit Questions (and Answer Options) here:</label>
+				 </td>
+			</tr>
+			
+		<tr> 
 			<td>
-				<label for="questionsList">Survey Questions:</label>
-			</td>	
-		</tr>
-		<tr>
-			<td>
-				<ol id="questionsList">
+				<ol id="addQuestionsDiv">
 				</ol>
 			</td>
 		</tr>
-	</tr>
-	<tr>
-		<td>
-			<input  id='submitFormButton' type="button" name="submitForm" style="visibility:hidden" value="Submit" onclick="submitSurvey(this);"/>
-		</td>	
-	</tr>
-</table>
+	</table>
 </form>
 
+<form id= 'surveyForm'>
+	<table>
+			<tr>
+				<label for="questionsList">Survey Questions:</label>
+			</tr>	
+
+			<tr>
+				<ol id="questionsList">
+				</ol>
+			</tr>
+
+			<tr>
+				<input  id='submitFormButton' type="button" name="submitForm" style="visibility:hidden" value="Submit" onclick="submitSurvey(this);"/>
+			</tr>	
+
+	</table>
+
+
+	</form>
+</div>
 </body>
 </html> 
